@@ -1,0 +1,27 @@
+
+fix_occupancy   = true
+opt_strategy    = SPEED
+
+mixing_scheme    = pulay
+mix_charge_amp   = 0.6
+mix_spin_amp     = 0.6
+
+
+xc_functional    = LDA
+
+WRITE_CST_ESP    = false
+WRITE_CHECKPOINT = none
+WRITE_BIB        = false
+WRITE_BANDS      = false
+
+
+##############################
+# ADDED FOR CONVERGENCE TEST #
+##############################
+
+TASK             = SINGLEPOINT
+CUT_OFF_ENERGY   = 400 eV
+CALCULATE_STRESS = TRUE
+SPIN_POLARISED   = TRUE
+SPIN_TREATMENT   = COLLINEAR
+

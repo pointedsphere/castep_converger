@@ -1,0 +1,17 @@
+
+fix_occupancy   = true
+opt_strategy    = SPEED
+
+mixing_scheme    = pulay
+mix_charge_amp   = 0.6
+mix_spin_amp     = 0.6
+
+cut_off_energy   = 300 ev
+
+xc_functional    = LDA
+
+WRITE_CST_ESP    = false
+WRITE_CHECKPOINT = none
+WRITE_BIB        = false
+WRITE_BANDS      = false
+

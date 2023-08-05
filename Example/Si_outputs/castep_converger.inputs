@@ -1,0 +1,102 @@
+
+#############################################################
+#        Example input file for castep_converger            #
+#############################################################
+
+#############################################################
+# An input file must be given for castep_converger to run,  #
+# this is because it is wise to always set at least the	    #
+# seed as default is Si.				    #
+# By default the file should be 'castep_converger.inputs'   #
+# but this can be changed in the script if required.	    #
+#############################################################
+
+#############################################################
+# ALL INPUTS ARE GIVEN AS KEY = VALUE PAIRS,		    #
+# KEYS MUST BE SEPERATED BY AN '=' SYMBOL FROM THEIR VALUES #
+# AFTER THE '=' ONLY A VALUE SHOULD BE GIVEN, NO COMMENTS   #
+#############################################################
+
+#############################################################
+# Any line that STARTS with a '#' is considered a comment   #
+#############################################################
+
+
+# The seed for the base files, <seed>.cell and <seed>.param that must be in the directory where castep_converger is ran
+seed = Si
+
+
+# Command used to run CASTEP with the seed appended
+castep_cmd = mpirun -n 2 castep.mpi
+
+
+# Option to only run kpoint or cutoff varying convergence
+run_cutoff = true
+run_kpoint = true
+
+
+# Should castep_converger attempt to reuse old check files in any calculations (where possible)
+# WARNING: Will remove all mention of WRITE_NONE or WRITE_CHECKPOINT from the param files it creates if true
+reuse = false
+
+
+# How many tasks of type CASTEP_CMD should be called at once,
+# Set to 1 for serial calculations, or > 1 for asynchronous parellism
+NUM_PROCESSES=2
+
+
+# Options of what to run convergence tests on, some options will require more expensive calculations
+#     + Convergence of stress requires stress to be calculated
+#     + Convergence of collinear spin requires a spin polarised calculation
+#       It is also reccomended to initialise the spin of each ion in the input cell
+converge_energy         = true
+converge_force          = true
+converge_stress         = true
+converge_collinear_spin = false
+
+
+# Tolerances (in units used by CASTEP, default unless changed in param file) for energy, force and stress
+#     + Total energy tol, will be multiplied by the number of ions in the cell
+#     + Tolerances cannot be given in scientific notation
+energy_tol = 0.00002
+force_tol  = 0.05
+stress_tol = 0.1
+
+
+# Cutoffs to use for the varying cutoff convergence testing
+cutoff_min  = 300
+cutoff_max  = 700
+cutoff_step = 100
+# Kpoint grid to be used in all varying cutoff convergence tests
+cutoff_kpoint = 3 3 3
+
+
+# Kpoint minimum/maximum and kpoint step, which will run in steps for all min <= k <= max.
+# NOTE: The kpoint step will increment the smallest kpoint dimension and scale all other kpoint
+#       grid directions such that the ratio fo smallest to each other dimension is constant.
+#       Note the ceil will be taken of all ratios in case of any non-integers.
+#       E.g. for initial kpoint grid of ( 1 2 3 ) in steps of 2 to 6 will test the kpoint grids:
+#           ( 1 2 2 ) , ( 3 6 9 ) , ( 5 10 15 )
+#       NOTE : This will round up to the nearest integer if required,
+#       NOTE : The minimum kpoint grid should be given as an arry of 3 integers, seperated by a space
+#              whereas the max value should be the smallest kpoint in the last grid to evaluate.
+kpoint_grid_min  = 3 3 3
+kpoint_grid_step = 2
+kpoint_grid_max  = 7
+# Cutoff energy (in eV) to be used for all varying cutoff grid calculations
+kpoint_cutoff = 300
+
+
+# Should castep_converger automatically delete any files it needs to
+# This includes any partially completed .castep files
+# WARNING - THIS COULD DELETE SOME WORK THAT YOU NEED, USE WITH CAUTION
+default_delete = false
+
+
+# Should all the parts of castep_converger be ran, i.e. initial generation, castep calcualtions and data analysis
+# WARNING - RUNNING ONLY SOME STEPS CAN CAUSE ISSUES
+run_generation    = true
+run_castep        = true
+run_data_analysis = true
+
+
