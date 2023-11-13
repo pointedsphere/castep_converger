@@ -761,7 +761,7 @@ FINE_GRID_STEP=-1
 DEFAULT_DELETE="false"
 
 # Should we supress output files that are not directly required for convergenge test
-SUPRESS_EXCESS_FILES="false"
+SUPRESS_EXCESS_FILES="true"
 
 # Run all parts of the convergence test by default
 RUN_GENERATION="true"

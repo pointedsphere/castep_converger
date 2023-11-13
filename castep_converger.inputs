@@ -60,7 +60,7 @@ default_delete = false
 
 
 # Should we supress output files that are not directly required for convergenge test
-supress_excess_files = false
+supress_excess_files = true
 
 
 # Should castep_converger attempt to reuse old check files in any calculations (where possible)

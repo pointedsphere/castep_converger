@@ -67,7 +67,7 @@ The following parameters govern exactly what is used as a convergence parameter 
 The following parameters may need to be set depending on preferences and environment:
 - `reuse` :: *default false* :: If true CASTEP will try and use check files from previous runs as continuation points. This may reduce runtime, but can also cause some issues if convergence is not achieved. This also requires checkfiles to be written for all calculations (which can be quite large).
 - `default_delete` :: *default false* :: If set to true CASTEP converger will automatically delete any files it finds for non-completed CASTEP calculations in order to re-run. If set to false it will ask before doing so. It could be useful to set this to `true` if working on a cluster for example, but it could permanently destroy data so use with care.
-- `supress_excess_files` :: *default false* :: Should any output files from CASTEP other than the `.castep` file be suppressed (e.g. `.check`, `.geom` & `.band` files etc). This is as we generally do not use them with a convergence test. ***Warning*** this cannot be set to `false` if `reuse`is set to `true`.
+- `supress_excess_files` :: *default true* :: Should any output files from CASTEP other than the `.castep` file be suppressed (e.g. `.check`, `.geom` & `.band` files etc). This is as we generally do not use them with a convergence test. ***Warning*** this cannot be set to `false` if `reuse`is set to `true`.
 
 The following parameters should all be left to `true` in most cases:
 - `run_generation` :: *default true* :: Generate files for a convergence test.
