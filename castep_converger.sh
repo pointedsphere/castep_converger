@@ -1125,6 +1125,8 @@ if [ "${RUN_GENERATION^^}" == "TRUE" ]; then
     # Create the kpoint convergence input files #
     #############################################
 
+    PREV_SEED="NONE"
+
     if [ "${RUN_KPOINT^^}" == "TRUE" ]; then
 
 	#####################################################################################################
@@ -1180,15 +1182,11 @@ if [ "${RUN_GENERATION^^}" == "TRUE" ]; then
 
 	    # Add in checkfiles for reusing if option given for all but first or if a checkfile exists
 	    if [ "${REUSE^^}" == "TRUE" ]; then
-		# Required temp vars
-		KPT_GRID_TMP=($(kpoint_grid_iterate `echo "$KPT - $KPOINT_GRID_STEP" | bc` ${KPOINT_GRID_MIN[@]}))
-		KPT_STRING_TMP="${KPT_GRID_TMP[0]}x${KPT_GRID_TMP[1]}x${KPT_GRID_TMP[2]}"
-		PREV_SEED=$( generate_seed $SEED $KPOINT_CUTOFF $KPT_STRING_TMP )
-		if [ -f "${PREV_SEED}.check" ] || [ $FIRST_LOOP != 1 ]; then
+		if [ -f "${PREV_SEED}.check" ] || [ $PREV_SEED != "NONE" ]; then
 		    modify_param_file_reuse $KPT_SEED $PREV_SEED
 		fi
 	    fi
-	    FIRST_LOOP=0
+	    PREV_SEED=$KPT_SEED
 
 	    print_warnings "TRUE"
 	    err_abort
@@ -1253,11 +1251,11 @@ if [ "${RUN_GENERATION^^}" == "TRUE" ]; then
 
 	    # Add in checkfiles for reusing if option given for all but first or if a checkfile exists
 	    if [ "${REUSE^^}" == "TRUE" ]; then
-		PREV_SEED=$( generate_seed $SEED $((CUT-CUTOFF_STEP)) `kpoint_grid_string ${CUTOFF_KPOINT[@]}` )
-		if [ -f "${PREV_SEED}.check" ] || [ $CUT -ne $CUTOFF_MIN ]; then
+		if [ -f "${PREV_SEED}.check" ] || [ $PREV_SEED != "NONE" ]; then
 		    modify_param_file_reuse $CUT_SEED $PREV_SEED
 		fi
 	    fi
+	    PREV_SEED=$CUT_SEED
 
 	    print_warnings "TRUE"
 	    err_abort
@@ -1321,11 +1319,11 @@ if [ "${RUN_GENERATION^^}" == "TRUE" ]; then
 
 	    # Add in checkfiles for reusing if option given for all but first or if a checkfile exists
 	    if [ "${REUSE^^}" == "TRUE" ]; then
-		PREV_SEED=$( generate_seed $SEED $FINE_GMAX_CUTOFF `kpoint_grid_string ${FINE_GMAX_KPOINT[@]}` $(bc_W " $FINE_GMAX - $FINE_GMAX_STEP ") )
-		if [ -f "${PREV_SEED}.check" ] || [ $( check_bc_same_float $FINE_GMAX $FINE_GMAX_MIN ) -eq 0 ]; then
+		if [ -f "${PREV_SEED}.check" ] || [ $PREV_SEED != "NONE" ]; then
 		    modify_param_file_reuse $GMAX_SEED $PREV_SEED
 		fi
 	    fi
+	    PREV_SEED=$GMAX_SEED
 
 	    print_warnings "TRUE"
 	    err_abort
@@ -1360,18 +1358,6 @@ if [ "${RUN_CASTEP^^}" == "TRUE" ]; then
     # Create an empty array for all seedas to be ran to be placed in
     SEEDS_TO_RUN=()
 
-    # Run for the cutoff convergence
-    if [ "${RUN_CUTOFF^^}" == "TRUE" ]; then
-	# Loop over all the required cutoffs
-	CUT=$CUTOFF_MIN
-	while [ $CUT -le $CUTOFF_MAX ]; do
-	    # Generate a seed for this cutoff and kpoint grid
-	    CUT_FINE_GMAX=$( get_current_fine_Gmax "$CUT_KPT_FINE_GMAX" "$CUT_KPT_FINE_GRID_SCALE" "$CUT" )
-	    SEEDS_TO_RUN+=($( generate_seed $SEED $CUT `kpoint_grid_string ${CUTOFF_KPOINT[@]}` $CUT_FINE_GMAX ))
-	    CUT=$((CUT+CUTOFF_STEP)) # Iterate
-	done
-    fi
-
     # Create or modify the cutoff convergence tests (if required)
     if [ "${RUN_KPOINT^^}" == "TRUE" ]; then
 
@@ -1398,6 +1384,18 @@ if [ "${RUN_CASTEP^^}" == "TRUE" ]; then
 
 	done
 
+    fi
+
+    # Run for the cutoff convergence
+    if [ "${RUN_CUTOFF^^}" == "TRUE" ]; then
+	# Loop over all the required cutoffs
+	CUT=$CUTOFF_MIN
+	while [ $CUT -le $CUTOFF_MAX ]; do
+	    # Generate a seed for this cutoff and kpoint grid
+	    CUT_FINE_GMAX=$( get_current_fine_Gmax "$CUT_KPT_FINE_GMAX" "$CUT_KPT_FINE_GRID_SCALE" "$CUT" )
+	    SEEDS_TO_RUN+=($( generate_seed $SEED $CUT `kpoint_grid_string ${CUTOFF_KPOINT[@]}` $CUT_FINE_GMAX ))
+	    CUT=$((CUT+CUTOFF_STEP)) # Iterate
+	done
     fi
 
     if [ "${RUN_FINE_GMAX^^}" == "TRUE" ]; then
